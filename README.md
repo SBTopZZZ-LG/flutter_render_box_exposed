@@ -10,25 +10,100 @@ For general information about developing packages, see the Dart guide for
 and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/developing-packages).
 -->
-
+# render_box_exposed
 A flutter package to expose a widget's RenderBox.
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+Add the package to your Flutter project.
+```Yaml
+render_box_exposed: ^0.0.1
+```
+
+## Properties
+`RenderBoxExposer` 
+| Data member | Info |
+|-------------|------|
+|isExposed : `bool`|`true` if the `RenderBox` has been exposed, otherwise `false`|
+|renderBox : `RenderBox?`|The exposed `RenderBox`. This property is non-null if the `isExposed` is `true`, otherwise `null`
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
+Use the `RenderBoxExposed` class to enclose the widget of choice, which will in turn expose the `RenderBox` of that widget.
+```Dart
+@override
+Widget build(BuildContext context) {
+    return Center(
+        child: RenderBoxExposed(
+            exposer: ...,
+            child: Text("Hey!"),
+        ),
+    );
+}
 ```
 
-## Additional information
+Finally, use the `RenderBoxExposer` wrapper class to retrieve the `RenderBox` object after the first build.
+```Dart
+late final RenderBoxExposer exposer;
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+@override
+void initState() {
+    exposer = RenderBoxExposer(
+        updateState: setState,
+    );
+}
+
+@override
+Widget build(BuildContext context) {
+    return Center(
+        child: RenderBoxExposed(
+            exposer: exposer,
+            child: Text("Hey!"),
+        ),
+    );
+}
+```
+
+To access the exposed `RenderBox`, use conditional logic to check if the value is available.
+```Dart
+// BAD (`renderBox` is null during the first build)
+double width = exposer.renderBox!.size.width;
+
+// GOOD
+if (exposer.isExposed) {
+    double width = exposer.renderBox!.size.width;
+}
+```
+
+Full example.
+```Dart
+late final RenderBoxExposer exposer;
+
+@override
+void initState() {
+    exposer = RenderBoxExposer(
+        updateState: setState,
+    );
+}
+
+@override
+Widget build(BuildContext context) {
+    double width = 0; // has a default value
+    if (exposer.isExposed) {
+        // fetch actual width here (after first build)
+        width = exposer.renderBox!.size.width;
+    }
+
+    return Center(
+        child: Column(
+            children: [
+                RenderBoxExposed(
+                    exposer: exposer,
+                    child: Text("Hey!"),
+                ),
+                Text("Width: ${width}"),
+            ],
+        ),
+    );
+}
+```
