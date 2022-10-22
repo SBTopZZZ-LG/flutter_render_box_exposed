@@ -21,11 +21,15 @@ render_box_exposed: ^0.0.1
 ```
 
 ## Properties
-`RenderBoxExposer` 
-| Data member | Info |
-|-------------|------|
-|isExposed : `bool`|`true` if the `RenderBox` has been exposed, otherwise `false`|
-|renderBox : `RenderBox?`|The exposed `RenderBox`. This property is non-null if the `isExposed` is `true`, otherwise `null`
+**RenderBoxExposer**
+```Dart
+// `true` if the RenderBox has been exposed, otherwise `false`
+bool isExposed;
+
+// The exposed RenderBox
+// This value is null before the first build is completed
+RenderBox? renderBox;
+```
 
 ## Usage
 
