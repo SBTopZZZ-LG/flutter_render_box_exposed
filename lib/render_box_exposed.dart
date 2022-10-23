@@ -72,7 +72,7 @@ class RenderBoxExposed extends StatelessWidget {
 
   RenderBoxExposed({super.key, required this.child, required this.exposer});
 
-  final GlobalKey globalKey = GlobalKey();
+  final GlobalKey _globalKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +81,7 @@ class RenderBoxExposed extends StatelessWidget {
 
       exposer.isExposed = true;
       exposer.renderBox =
-          globalKey.currentContext!.findRenderObject() as RenderBox;
+          _globalKey.currentContext!.findRenderObject() as RenderBox;
 
       if (flagFirstBuild) {
         exposer.updateState(() => {});
@@ -89,7 +89,7 @@ class RenderBoxExposed extends StatelessWidget {
     });
 
     return Container(
-      key: globalKey,
+      key: _globalKey,
       child: child,
     );
   }
