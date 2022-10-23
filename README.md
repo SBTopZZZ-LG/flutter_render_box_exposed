@@ -17,7 +17,7 @@ A flutter package to expose a widget's RenderBox.
 
 Add the package to your Flutter project.
 ```Yaml
-render_box_exposed: ^0.0.1
+render_box_exposed: ^1.0.0
 ```
 
 ## Properties
