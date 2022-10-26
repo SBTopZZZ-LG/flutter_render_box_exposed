@@ -64,11 +64,11 @@ Widget build(BuildContext context) {
 To access the exposed `RenderBox`, use conditional logic to check if the value is available.
 ```Dart
 // BAD (`renderBox` is null during the first build)
-double width = exposer.renderBox!.size.width;
+double width = exposer.renderBox.value!.size.width;
 
 // GOOD
 if (exposer.isExposed) {
-    double width = exposer.renderBox!.size.width;
+    double width = exposer.renderBox.value!.size.width;
 }
 ```
 **NOTE:** Alternatively and as of version 1.1.0 and above, you can use a `ValueListenableBuilder` to subscribe to the notifier property directly.
