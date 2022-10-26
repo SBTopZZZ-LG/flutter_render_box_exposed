@@ -5,13 +5,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 /// An intermediate (or wrapper) class to access the `RenderBox` exposed by `RenderBoxExposed`.
-/// Ensure that the property `isExposed` is `true` before trying to access the `renderBox`.
-///
-/// Note: The current build only supports the usage of `StatefulWidget` in order to access the exposed `RenderBox`.
+/// Ensure that the property `isExposed` is `true` before trying to access the `value` of `renderBox`.
 ///
 /// Example Usage:
 /// ```
-/// final RenderBoxExposer exposer = RenderBoxExposer(updateState: setState);
+/// final RenderBoxExposer exposer = const RenderBoxExposer();
 ///
 /// @override
 /// Widget build(BuildContext build) {
@@ -24,32 +22,23 @@ import 'package:flutter/material.dart';
 /// }
 /// ```
 class RenderBoxExposer {
-  /// A callback function which is called once when the `RenderBox` is exposed
-  final void Function(void Function()) updateState;
-
-  RenderBoxExposer({required this.updateState});
-
   /// Boolean value representing the state of the `renderBox` property.
   /// Returns `true` if the `RenderBox` is exposed, otherwise `false.
   bool isExposed = false;
 
-  /// The exposed `RenderBox`
-  RenderBox? renderBox;
+  /// A `ValueNotifier` for the `RenderBox` object.
+  /// Use `ValueListenableBuilder` to subscribe to the changes to the `RenderBox`.
+  ValueNotifier<RenderBox?> renderBox = ValueNotifier(null);
 }
 
 /// A widget wrapper class to expose the `RenderBox` of the `child` widget.
 ///
 /// Example Usage:
 /// ```
-/// final RenderBoxExposer exposer = RenderBoxExposer(updateState: setState);
+/// final RenderBoxExposer exposer = const RenderBoxExposer();
 ///
 /// @override
 /// Widget build(BuildContext build) {
-///   double width = 0;
-///   if (exposer.isExposed) {
-///     width = exposer.renderBox!.size.width;
-///   }
-///
 ///   return Center(
 ///     child: Column(
 ///       children: [
@@ -57,7 +46,13 @@ class RenderBoxExposer {
 ///           child: Text("Sample text", style: TextStyle(fontSize: 30)),
 ///           exposer: exposer,
 ///         ),
-///         Text("Width: ${width}"),
+///         ValueListenableBuilder(
+///           valueListenable: exposer.renderBox,
+///           builder: (ctx, renderBox, c) {
+///               // To check if `RenderBox` is available, use the `isExposed` property, or alternatively check if `renderBox` is not null
+///               return Text("Width: ${exposer.isExposed ? renderBox!.size.width : 0}");
+///           }
+///         ),
 ///       ],
 ///     ),
 ///   );
@@ -77,15 +72,9 @@ class RenderBoxExposed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Future.delayed(Duration.zero, () {
-      bool flagFirstBuild = !exposer.isExposed;
-
       exposer.isExposed = true;
-      exposer.renderBox =
+      exposer.renderBox.value =
           _globalKey.currentContext!.findRenderObject() as RenderBox;
-
-      if (flagFirstBuild) {
-        exposer.updateState(() => {});
-      }
     });
 
     return Container(

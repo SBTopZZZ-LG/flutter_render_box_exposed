@@ -23,9 +23,7 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
 
-    textExposer = RenderBoxExposer(
-      updateState: setState,
-    );
+    textExposer = RenderBoxExposer();
 
     controller =
         AnimationController(vsync: this, duration: const Duration(seconds: 1));
@@ -45,9 +43,16 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text(textExposer.isExposed
-              ? textExposer.renderBox!.size.height.toString()
-              : "RenderBoxExposed"),
+          title: ValueListenableBuilder(
+            valueListenable: textExposer.renderBox,
+            builder: ((context, value, child) {
+              if (value != null) {
+                return Text("Height: ${value.size.height}");
+              } else {
+                return const Text("RenderBoxExposed");
+              }
+            }),
+          ),
           centerTitle: true),
       body: Center(
         child: RenderBoxExposed(

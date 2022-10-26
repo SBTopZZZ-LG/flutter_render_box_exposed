@@ -17,7 +17,7 @@ A flutter package to expose a widget's RenderBox.
 
 Add the package to your Flutter project.
 ```Yaml
-render_box_exposed: ^1.0.0
+render_box_exposed: ^1.1.0
 ```
 
 ## Properties
@@ -26,9 +26,9 @@ render_box_exposed: ^1.0.0
 // `true` if the RenderBox has been exposed, otherwise `false`
 bool isExposed;
 
-// The exposed RenderBox
-// This value is null before the first build is completed
-RenderBox? renderBox;
+// A notifier for the exposed RenderBox
+// The `value` property is null before the first build is completed
+ValueNotifier<RenderBox?> renderBox;
 ```
 
 ## Usage
@@ -48,14 +48,7 @@ Widget build(BuildContext context) {
 
 Finally, use the `RenderBoxExposer` wrapper class to retrieve the `RenderBox` object after the first build.
 ```Dart
-late final RenderBoxExposer exposer;
-
-@override
-void initState() {
-    exposer = RenderBoxExposer(
-        updateState: setState,
-    );
-}
+final RenderBoxExposer exposer = const RenderBoxExposer();
 
 @override
 Widget build(BuildContext context) {
@@ -78,26 +71,14 @@ if (exposer.isExposed) {
     double width = exposer.renderBox!.size.width;
 }
 ```
+**NOTE:** Alternatively and as of version 1.1.0 and above, you can use a `ValueListenableBuilder` to subscribe to the notifier property directly.
 
 Full example.
 ```Dart
-late final RenderBoxExposer exposer;
-
-@override
-void initState() {
-    exposer = RenderBoxExposer(
-        updateState: setState,
-    );
-}
+final RenderBoxExposer exposer = const RenderBoxExposer();
 
 @override
 Widget build(BuildContext context) {
-    double width = 0; // has a default value
-    if (exposer.isExposed) {
-        // fetch actual width here (after first build)
-        width = exposer.renderBox!.size.width;
-    }
-
     return Center(
         child: Column(
             children: [
@@ -105,7 +86,16 @@ Widget build(BuildContext context) {
                     exposer: exposer,
                     child: Text("Hey!"),
                 ),
-                Text("Width: ${width}"),
+                ValueListenableBuilder(
+                    valueListenable: exposer.renderBox,
+                    builder: (ctx, renderBox, c) {
+                        if (exposer.isExposed) {
+                            return Text("Width: ${renderBox!.size.width}");
+                        } else {
+                            return const Text();
+                        }
+                    }
+                ),
             ],
         ),
     );

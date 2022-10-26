@@ -1,6 +1,6 @@
 name: render_box_exposed
 description: A flutter package to expose a widget's RenderBox
-version: 1.0.0+1
+version: 1.1.0
 homepage: https://github.com/SBTopZZZ-LG/flutter_render_box_exposed
 
 environment:
